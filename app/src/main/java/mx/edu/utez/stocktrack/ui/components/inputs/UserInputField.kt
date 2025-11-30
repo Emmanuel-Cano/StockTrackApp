@@ -23,11 +23,9 @@ fun UserInputField(
     val focusManager = LocalFocusManager.current
 
     OutlinedTextField(
-        value = viewModel.username.value,
-        onValueChange = { viewModel.username.value = it },
-        label = { Text(label,
-            color = Color(0xFFAFAFAF)
-        ) },
+        value = viewModel.email,
+        onValueChange = { viewModel.email = it },
+        label = { Text(label, color = Color(0xFFAFAFAF)) },
         modifier = Modifier.fillMaxWidth(),
         singleLine = true,
         keyboardOptions = KeyboardOptions.Default.copy(

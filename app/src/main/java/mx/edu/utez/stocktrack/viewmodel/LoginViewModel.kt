@@ -1,27 +1,44 @@
 package mx.edu.utez.stocktrack.viewmodel
 
 
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import kotlinx.coroutines.launch
+import mx.edu.utez.stocktrack.data.network.RetrofitInstance
 
 class LoginViewModel : ViewModel() {
 
+    private val repository = UserRepository(RetrofitInstance.api)
 
-    var password = mutableStateOf("")
-    var username = mutableStateOf("")
-    var loginError = mutableStateOf("")
+    var email by mutableStateOf("")
+    var password by mutableStateOf("")
 
-    fun login(navController: NavController){
+    var isLoading by mutableStateOf(false)
+    var errorMessage by mutableStateOf<String?>(null)
+    var isLoginSuccess by mutableStateOf(false)
 
-        if (username.value == "admin" && password.value == "123") {
-            loginError.value = ""
-            navController.navigate("MenuScreen") {
-                popUpTo("MenuScreen") { inclusive = true }
-            }
-        } else {
-            loginError.value = "Usuario o contraseña incorrectos"
+    fun onLoginClick() {
+        if (email.isBlank() || password.isBlank()) {
+            errorMessage = "Ingresa email y contraseña"
+            return
         }
 
+        isLoading = true
+        errorMessage = null
+
+        viewModelScope.launch {
+            val result = repository.login(email, password)
+            isLoading = false
+
+            result.onSuccess {
+                isLoginSuccess = true
+            }.onFailure { error ->
+                errorMessage = error.message ?: "Error al iniciar sesión"
+            }
+        }
     }
 }

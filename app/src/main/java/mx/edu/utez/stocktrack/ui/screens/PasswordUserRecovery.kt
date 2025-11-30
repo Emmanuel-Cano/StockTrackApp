@@ -123,17 +123,3 @@ fun RecuperarUserContrasenaScreen(
         }
     }
 }
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun RecuperarUserContrasenaScreenPreview() {
-    val navController = rememberNavController()
-    val viewModel = LoginViewModel()
-
-    RecuperarUserContrasenaScreen(
-        viewModel = viewModel,
-        navController = navController,
-        onRecuperarClick = {},
-        onCancelarClick = {}
-    )
-}

@@ -14,17 +14,14 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import mx.edu.utez.stocktrack.viewmodel.LoginViewModel
 
-
 @Composable
 fun PasswordField(viewModel: LoginViewModel, label: String = "Contraseña") {
     val focusManager = LocalFocusManager.current
 
     OutlinedTextField(
-        value = viewModel.password.value,
-        onValueChange = { viewModel.password.value = it },
-        label = { Text(label,
-            color = Color(0xFFAFAFAF)
-        )},
+        value = viewModel.password,
+        onValueChange = { viewModel.password = it },
+        label = { Text(label, color = Color(0xFFAFAFAF)) },
         visualTransformation = PasswordVisualTransformation(),
         modifier = Modifier.fillMaxWidth(),
         singleLine = true,
