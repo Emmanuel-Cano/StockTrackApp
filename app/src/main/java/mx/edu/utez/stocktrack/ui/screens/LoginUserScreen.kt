@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,23 +20,27 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import mx.edu.utez.stocktrack.R
 import mx.edu.utez.stocktrack.ui.components.buttons.PrimaryButton
-import mx.edu.utez.stocktrack.ui.components.images.CircularImage
 import mx.edu.utez.stocktrack.ui.components.inputs.PasswordField
 import mx.edu.utez.stocktrack.ui.components.inputs.UserInputField
 import mx.edu.utez.stocktrack.ui.components.texts.Link
 import mx.edu.utez.stocktrack.ui.components.texts.Title
 import mx.edu.utez.stocktrack.viewmodel.LoginViewModel
-import mx.edu.utez.stocktrack.R
-import mx.edu.utez.stocktrack.ui.components.buttons.SecundaryButton
+
+val DarkBackground = Color(0xFF36454F)
+val AccentButton = Color(0xFF987723)
+val LightText = Color.White
 
 @Composable
-fun LoginScreen(viewModel: LoginViewModel, navController: NavController){
+fun LoginUserScreen(viewModel: LoginViewModel, navController: NavController){
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -43,11 +48,11 @@ fun LoginScreen(viewModel: LoginViewModel, navController: NavController){
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(5.dp, Alignment.CenterVertically)
         ) {
-            Title("StockTrack")
+            Title("Iniciar sesión")
 
             Text(
-                text = "Bienvenido",
-                fontSize = 25.sp,
+                text = "Bienvenido a StockTrack",
+                fontSize = 20.sp,
                 fontWeight = FontWeight.Medium,
                 color = Color(0xFFAC7F5E),
                 modifier =  Modifier.align(Alignment.CenterHorizontally)
@@ -61,28 +66,55 @@ fun LoginScreen(viewModel: LoginViewModel, navController: NavController){
                     .size(250.dp)
             )
 
-            PrimaryButton("Iniciar Sesión") {
-                navController.navigate("loginUser")
-            }
+            Text(
+                text = "Correo",
+                color = Color.Black,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Normal,
+                modifier = Modifier.align(Alignment.Start)
+            )
 
+            UserInputField(
+                viewModel = viewModel,
+                label = "Correo",
+            )
 
-            SecundaryButton("Registrarse") {
+            Text(
+                text = "Contraseña",
+                color = Color.Black,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Normal,
+                modifier = Modifier.align(Alignment.Start)
+            )
+
+            PasswordField(
+                viewModel = viewModel,
+                label = "Contraseña"
+            )
+
+            PrimaryButton("Iniciar") {
                 viewModel.login(navController)
             }
+            Link("¿Olvidaste tu contraseña?") {
+                navController.navigate("password")
+            }
+
+            TextButton(onClick = {
+                navController.popBackStack()
+            }) {
+                Text("Cancelar", color = Color.Black)
+            }
+
 
         }
     }
 }
 
-
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun LoginScreenPreview() {
+fun LoginUserScreenPreview() {
     val viewModel = LoginViewModel()
     val navController = rememberNavController()
 
-    mx.edu.utez.stocktrack.ui.screens.LoginScreen(
-        viewModel = viewModel,
-        navController = navController
-    )
+    LoginUserScreen(viewModel = viewModel, navController = navController)
 }

@@ -12,8 +12,8 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun Title(
     text: String,
-    fontSize: Int = 24,
-    color: Color = Color.White,
+    fontSize: Int = 45,
+    color: Color = Color(0xFFAC7F5E),
     textAlign: TextAlign = TextAlign.Center,
     modifier: Modifier = Modifier
 ) {
