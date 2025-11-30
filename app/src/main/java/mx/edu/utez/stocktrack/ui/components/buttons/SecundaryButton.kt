@@ -10,8 +10,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
+
 @Composable
-fun PrimaryButton(
+fun SecundaryButton(
     text: String,
     onClick: () -> Unit
 ) {
@@ -21,10 +22,10 @@ fun PrimaryButton(
         shape = MaterialTheme.shapes.medium,
         elevation = ButtonDefaults.buttonElevation(4.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = Color(0xFFA6731B)
+            containerColor = Color(0xFFDEC69B)
         )
 
     ) {
-        Text(text = text, style = MaterialTheme.typography.bodyLarge)
+        Text(text = text, style = MaterialTheme.typography.bodyLarge, color = Color(0xFF93550E))
     }
 }
