@@ -93,7 +93,7 @@ fun LoginUserScreen(viewModel: LoginViewModel, navController: NavController){
             )
 
             PrimaryButton("Iniciar") {
-                viewModel.login(navController)
+                navController.navigate("login")
             }
             Link("¿Olvidaste tu contraseña?") {
                 navController.navigate("password")
@@ -108,13 +108,4 @@ fun LoginUserScreen(viewModel: LoginViewModel, navController: NavController){
 
         }
     }
-}
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun LoginUserScreenPreview() {
-    val viewModel = LoginViewModel()
-    val navController = rememberNavController()
-
-    LoginUserScreen(viewModel = viewModel, navController = navController)
 }

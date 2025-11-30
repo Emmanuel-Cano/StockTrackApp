@@ -67,22 +67,10 @@ fun LoginScreen(viewModel: LoginViewModel, navController: NavController){
 
 
             SecundaryButton("Registrarse") {
-                viewModel.login(navController)
+                navController.navigate("register")
             }
 
         }
     }
 }
 
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun LoginScreenPreview() {
-    val viewModel = LoginViewModel()
-    val navController = rememberNavController()
-
-    mx.edu.utez.stocktrack.ui.screens.LoginScreen(
-        viewModel = viewModel,
-        navController = navController
-    )
-}
