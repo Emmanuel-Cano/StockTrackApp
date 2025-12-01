@@ -43,6 +43,12 @@ class RegisterViewModel() : ViewModel() {
         successMessage = null
         isRegisterSuccess = false
 
+        //if(errorMessage == null) {
+        //  errorMessage = "El registro no sirve"
+        //Log.e("Derick", "El registro detiene su ejecución en algún punto")
+        //return
+        //}
+
         val newUser = UserRequest(
             nombre = nombre,
             email = email,
