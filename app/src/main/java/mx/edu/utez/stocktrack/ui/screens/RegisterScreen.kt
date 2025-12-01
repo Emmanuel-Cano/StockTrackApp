@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -18,9 +19,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import mx.edu.utez.stocktrack.viewmodel.RegisterViewModel
 
 
@@ -45,7 +48,20 @@ fun RegisterScreen(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = "Registro de Usuario", style = MaterialTheme.typography.headlineMedium)
+        Text(
+            text = "Crear cuenta",
+            style = MaterialTheme.typography.headlineMedium.copy(
+                fontSize = 60.sp
+            )
+        )
+
+        Text(
+            text = "Ingresa los datos solicitados",
+            style = MaterialTheme.typography.headlineMedium.copy(
+                fontSize = 20.sp
+            )
+        )
+
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -99,17 +115,26 @@ fun RegisterScreen(
         } else {
             Button(
                 onClick = { viewModel.onRegisterClick() },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF835930),
+                    contentColor = Color.White
+                )
             ) {
                 Text("Registrar")
             }
 
+
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Botón para cancelar / volver al login manualmente
             OutlinedButton(
                 onClick = { onNavigateBack() },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.outlinedButtonColors(
+                    containerColor = Color.Transparent,
+                    contentColor = Color(0xFF697277)
+                )
+
             ) {
                 Text("Volver al Login")
             }
