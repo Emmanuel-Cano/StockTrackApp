@@ -22,10 +22,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import mx.edu.utez.stocktrack.ui.components.buttons.PrimaryButton
-import mx.edu.utez.stocktrack.ui.components.images.CircularImage
-import mx.edu.utez.stocktrack.ui.components.inputs.PasswordField
-import mx.edu.utez.stocktrack.ui.components.inputs.UserInputField
-import mx.edu.utez.stocktrack.ui.components.texts.Link
 import mx.edu.utez.stocktrack.ui.components.texts.Title
 import mx.edu.utez.stocktrack.viewmodel.LoginViewModel
 import mx.edu.utez.stocktrack.R

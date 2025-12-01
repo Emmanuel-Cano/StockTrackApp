@@ -1,14 +1,15 @@
 package mx.edu.utez.stocktrack.viewmodel
 
+import ApiService
 import mx.edu.utez.stocktrack.data.model.LoginRequest
 import mx.edu.utez.stocktrack.data.model.UserRequest
-import mx.edu.utez.stocktrack.data.network.ApiService
 
 
 class UserRepository(private val api: ApiService) {
     suspend fun registrarUsuario(user: UserRequest): Result<String> {
         return try {
-            val response = api.registrarUsuario(user)
+            print(user)
+            val response = api.register(user)
             if (response.isSuccessful) {
                 Result.success("Usuario registrado con éxito")
             } else {
@@ -19,10 +20,10 @@ class UserRepository(private val api: ApiService) {
         }
     }
 
-    suspend fun login(matricula: String, contrasena: String): Result<Boolean> {
+    suspend fun login(email: String, password: String): Result<Boolean> {
         return try {
-            val request = LoginRequest(matricula, contrasena)
-            val response = api.loginUsuario(request)
+            val request = LoginRequest(email, password)
+            val response = api.login(request)
 
             if (response.isSuccessful) {
                 Result.success(true)

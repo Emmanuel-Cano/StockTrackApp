@@ -1,10 +1,11 @@
 package mx.edu.utez.stocktrack.data.network
 
+import ApiService
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitInstance {
-    private const val BASE_URL = "http://192.168.0.20:5001/"
+    private const val BASE_URL = "http://172.20.10.2:5001/"
 
     val api: ApiService by lazy {
         Retrofit.Builder()

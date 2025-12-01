@@ -18,9 +18,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import mx.edu.utez.stocktrack.viewmodel.RegisterViewModel
 
 
@@ -45,7 +48,23 @@ fun RegisterScreen(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = "Registro de Usuario", style = MaterialTheme.typography.headlineMedium)
+
+        Text(
+            text = "Crear Cuenta",
+            fontSize = 40.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.Black,
+            modifier =  Modifier.align(Alignment.CenterHorizontally)
+        )
+
+        Text(
+            text = "Ingresa los datos solicitados",
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Light,
+            color = Color.Black,
+            modifier =  Modifier.align(Alignment.CenterHorizontally)
+        )
+
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -53,7 +72,7 @@ fun RegisterScreen(
         OutlinedTextField(
             value = viewModel.nombre,
             onValueChange = { viewModel.nombre = it },
-            label = { Text("Nombre") },
+            label = { Text("Nombre de usuario") },
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -63,7 +82,7 @@ fun RegisterScreen(
         OutlinedTextField(
             value = viewModel.email,
             onValueChange = { viewModel.email = it },
-            label = { Text("Matrícula") },
+            label = { Text("Correo") },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             modifier = Modifier.fillMaxWidth()
         )
@@ -81,7 +100,7 @@ fun RegisterScreen(
         OutlinedTextField(
             value = viewModel.passwordc,
             onValueChange = { viewModel.passwordc = it },
-            label = { Text("Repetir Contraseña") },
+            label = { Text("Confirmar Contraseña") },
             visualTransformation = PasswordVisualTransformation(),
             modifier = Modifier.fillMaxWidth(),
             isError = viewModel.password != viewModel.passwordc && viewModel.passwordc.isNotEmpty(),
@@ -101,7 +120,7 @@ fun RegisterScreen(
                 onClick = { viewModel.onRegisterClick() },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Registrar")
+                Text("Crear cuenta")
             }
 
             Spacer(modifier = Modifier.height(8.dp))
