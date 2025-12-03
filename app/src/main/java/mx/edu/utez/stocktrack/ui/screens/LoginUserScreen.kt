@@ -11,6 +11,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,7 +37,13 @@ val AccentButton = Color(0xFF987723)
 val LightText = Color.White
 
 @Composable
-fun LoginUserScreen(viewModel: LoginViewModel, navController: NavController){
+fun LoginUserScreen(viewModel: LoginViewModel, navController: NavController,
+                    onLoginSuccess: () -> Unit){
+    LaunchedEffect(viewModel.isLoginSuccess) {
+        if (viewModel.isLoginSuccess) {
+            onLoginSuccess()
+        }
+    }
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -93,7 +100,7 @@ fun LoginUserScreen(viewModel: LoginViewModel, navController: NavController){
             )
 
             PrimaryButton("Iniciar") {
-                navController.navigate("login")
+                viewModel.onLoginClick()
             }
             Link("¿Olvidaste tu contraseña?") {
                 navController.navigate("password")

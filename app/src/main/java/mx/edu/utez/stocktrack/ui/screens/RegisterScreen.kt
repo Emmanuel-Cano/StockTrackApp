@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -118,7 +119,10 @@ fun RegisterScreen(
         } else {
             Button(
                 onClick = { viewModel.onRegisterClick() },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFFA6731B)
+                )
             ) {
                 Text("Crear cuenta")
             }
@@ -133,7 +137,6 @@ fun RegisterScreen(
             }
         }
 
-        // Mensajes de error/éxito
         viewModel.errorMessage?.let {
             Spacer(modifier = Modifier.height(8.dp))
             Text(text = it, color = MaterialTheme.colorScheme.error)

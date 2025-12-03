@@ -1,8 +1,9 @@
 package mx.edu.utez.stocktrack.viewmodel
 
-import ApiService
+
 import mx.edu.utez.stocktrack.data.model.LoginRequest
 import mx.edu.utez.stocktrack.data.model.UserRequest
+import mx.edu.utez.stocktrack.data.network.ApiService
 
 
 class UserRepository(private val api: ApiService) {

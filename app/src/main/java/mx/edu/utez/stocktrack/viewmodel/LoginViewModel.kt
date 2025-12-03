@@ -6,7 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavController
+import mx.edu.utez.stocktrack.viewmodel.UserRepository
 import kotlinx.coroutines.launch
 import mx.edu.utez.stocktrack.data.network.RetrofitInstance
 
@@ -40,5 +40,15 @@ class LoginViewModel : ViewModel() {
                 errorMessage = error.message ?: "Error al iniciar sesión"
             }
         }
+    }
+    var userEmail: String? by mutableStateOf(null)
+    var userToken: String? by mutableStateOf(null)
+
+    fun clearSession() {
+        userEmail = null
+        email = ""
+        password = ""
+        userToken = null
+        isLoginSuccess = false
     }
 }

@@ -3,6 +3,8 @@ package mx.edu.utez.stocktrack.ui.screens
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
@@ -16,10 +18,32 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import mx.edu.utez.stocktrack.ui.components.ProductCard
 import mx.edu.utez.stocktrack.R
+import mx.edu.utez.stocktrack.data.network.RetrofitInstance
+import mx.edu.utez.stocktrack.data.repository.ProductRepository
+import mx.edu.utez.stocktrack.viewmodel.ProductViewModel
+import mx.edu.utez.stocktrack.viewmodel.ProductViewModelFactory
 
 @Composable
-fun InventoryScreen() {
+fun InventoryScreen(navController: NavController,
+    onAddProductClick: () -> Unit,
+                    onLogoutClick: () -> Unit) {
+
+    val cafe = Color(0xFFA88871)
+
+    val repository = remember { ProductRepository(RetrofitInstance.api) }
+    val factory = remember { ProductViewModelFactory(repository) }
+    val viewModel: ProductViewModel = viewModel(factory = factory)
+
+    LaunchedEffect(Unit) {
+        viewModel.loadProducts()
+    }
+
+    val products by viewModel.products.collectAsState()
+
 
     Scaffold(
         topBar = {
@@ -28,7 +52,6 @@ fun InventoryScreen() {
                     .fillMaxWidth()
                     .height(110.dp)
             ) {
-
                 Image(
                     painter = painterResource(R.drawable.banner),
                     contentDescription = null,
@@ -44,27 +67,55 @@ fun InventoryScreen() {
                     verticalAlignment = Alignment.Top
                 ) {
                     Column {
-                        Text("StockTrack",
+                        Text(
+                            text = "StockTrack",
                             color = Color.White,
-                            style = MaterialTheme.typography.titleLarge, fontSize = 28.sp,
-                            letterSpacing = 1.5.sp,
-
+                            style = MaterialTheme.typography.titleLarge.copy(
+                                fontSize = 28.sp,
+                                letterSpacing = 1.5.sp
+                            )
                         )
                         Text(
                             text = "Inventario",
                             color = Color.White,
-                            style = MaterialTheme.typography.titleLarge, fontSize = 22.sp,
-                            letterSpacing = 1.5.sp,
+                            style = MaterialTheme.typography.titleLarge.copy(
+                                fontSize = 22.sp,
+                                letterSpacing = 1.5.sp
+                            )
                         )
                     }
 
-                    IconButton(onClick = { }) {
+                    IconButton(onClick = { onLogoutClick()}) {
                         Icon(
                             painter = painterResource(R.drawable.logout),
                             contentDescription = null,
                             tint = Color.White
                         )
                     }
+                }
+            }
+        },
+
+        bottomBar = {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(90.dp)
+                    .background(cafe),
+                contentAlignment = Alignment.Center
+            ) {
+                FloatingActionButton(
+                    onClick = {  onAddProductClick()},
+                    containerColor = Color.White,
+                    shape = RoundedCornerShape(50),
+                    modifier = Modifier.size(64.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.plus),
+                        contentDescription = "Agregar",
+                        tint = cafe,
+                        modifier = Modifier.size(32.dp)
+                    )
                 }
             }
         }
@@ -77,15 +128,26 @@ fun InventoryScreen() {
         ) {
 
             Spacer(modifier = Modifier.height(16.dp))
-
             SearchInput()
-
             Spacer(modifier = Modifier.height(24.dp))
 
-            Text(
-                "Contenido inventario",
-                modifier = Modifier.padding(16.dp)
-            )
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(bottom = 100.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                items(products) { product ->
+                    ProductCard(
+                        product = product,
+                        viewModel = viewModel,
+                        onUpdateClick = { selectedProduct ->
+                            navController.navigate("updateProduct/${selectedProduct.id}")
+                        }
+                    )
+                }
+
+            }
         }
     }
 }
@@ -112,13 +174,5 @@ fun SearchInput() {
             modifier = Modifier.fillMaxWidth(0.9f),
             shape = RoundedCornerShape(30.dp)
         )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun InventoryScreenPreview() {
-    MaterialTheme {
-        InventoryScreen()
     }
 }

@@ -1,3 +1,5 @@
+package mx.edu.utez.stocktrack.data.network
+
 import mx.edu.utez.stocktrack.data.model.LoginRequest
 import mx.edu.utez.stocktrack.data.model.UserRequest
 import mx.edu.utez.stocktrack.data.model.Product
@@ -20,12 +22,15 @@ interface ApiService {
     @GET("products")
     suspend fun getProducts(): Response<List<Product>>
 
+    @GET("products/{id}")
+    suspend fun getProduct(@Path("id") id: Int): Response<Product>
+
     @POST("products")
     suspend fun createProduct(@Body product: Product): Response<Product>
 
     @PUT("products/{id}")
-    suspend fun updateProduct(@Path("id") id: Int, @Body product: Product): Response<Product>
+    suspend fun updateProduct(@Path("id") id: Int?, @Body product: Product): Response<Product>
 
     @DELETE("products/{id}")
-    suspend fun deleteProduct(@Path("id") id: Int): Response<Map<String, String>>
+    suspend fun deleteProduct(@Path("id") id: Int?): Response<Map<String, String>>
 }
