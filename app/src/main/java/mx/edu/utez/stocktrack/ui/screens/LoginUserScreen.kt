@@ -99,6 +99,15 @@ fun LoginUserScreen(viewModel: LoginViewModel, navController: NavController,
                 label = "Contraseña"
             )
 
+            if (viewModel.errorMessage != null) {
+                Text(
+                    text = viewModel.errorMessage!!,
+                    color = Color.Red,
+                    fontSize = 14.sp,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+            }
+
             PrimaryButton("Iniciar") {
                 viewModel.onLoginClick()
             }

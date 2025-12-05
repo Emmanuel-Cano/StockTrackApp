@@ -37,7 +37,7 @@ class LoginViewModel : ViewModel() {
             result.onSuccess {
                 isLoginSuccess = true
             }.onFailure { error ->
-                errorMessage = error.message ?: "Error al iniciar sesión"
+                errorMessage = error.message ?: "Correo o contraseña incorrecta"
             }
         }
     }

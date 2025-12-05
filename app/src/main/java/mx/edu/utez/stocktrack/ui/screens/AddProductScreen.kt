@@ -73,11 +73,18 @@ fun AddProductScreen(
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
 
+
+
         Text(if (isUpdateMode) "Actualizar producto" else "Agregar producto", style = MaterialTheme.typography.headlineSmall)
+        Text("Nombre", style = MaterialTheme.typography.bodyMedium)
         OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text("Nombre") })
+        Text("Descripción", style = MaterialTheme.typography.bodyMedium)
         OutlinedTextField(value = description, onValueChange = { description = it }, label = { Text("Descripción") })
+        Text("Cantidad", style = MaterialTheme.typography.bodyMedium)
         OutlinedTextField(value = amount, onValueChange = { amount = it }, label = { Text("Cantidad") })
+        Text("Fecha", style = MaterialTheme.typography.bodyMedium)
         OutlinedTextField(value = date, onValueChange = { date = it }, label = { Text("Fecha (YYYY-MM-DD)") })
+        Text("Tipo", style = MaterialTheme.typography.bodyMedium)
         OutlinedTextField(value = type, onValueChange = { type = it }, label = { Text("Tipo") })
 
         imageUri?.let { uri ->
