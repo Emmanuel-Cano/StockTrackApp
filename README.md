@@ -8,7 +8,7 @@ Fecha de entrega: 9 de Diciembre
 
 1. [Cano Landa Jorge Emmanuel]	Repositorio, Backend, Retrofit	@Emmanuel-Cano
 2. [Ocampo Vargas Ricardo Naul]	UI Design, Fronted, Lógica de CRUD	@RicardoOcampo06
-3. [Villaba González Carlos Giovanni]	Sensor, Lógica, Backend, CRUD	@carlosvillalba06
+3. [Villalba González Carlos Giovanni]	Sensor, Lógica, Backend, CRUD	@carlosvillalba06
 
 
 ## **Descripción del Proyecto**
@@ -93,6 +93,26 @@ El ejecutable firmado (.apk) se encuentra disponible en la sección de **Release
 1.  Ve a la sección "Releases" (o haz clic aquí: (link_a_tus_releases)).
 2.  Descarga el archivo .apk de la última versión.
 3.  Instálalo en tu dispositivo Android (asegúrate de permitir la instalación de orígenes desconocidos).
+
+
+
+## **Capturas**
+
+
+
+<img width="812" height="1722" alt="image" src="https://github.com/user-attachments/assets/cbfd80ce-3fb8-4bc0-92ce-02c935c1cab7" />
+
+
+
+Primero, la app le pedirá al usuario iniciar sesión o registrarte.
+
+
+<img width="808" height="1738" alt="image" src="https://github.com/user-attachments/assets/21e94cd0-5037-4006-a128-2a61b597c321" />
+
+
+
+Posterior, la app solicitara al usuario ingresar con las credenciales válidas
+
 
 
 
