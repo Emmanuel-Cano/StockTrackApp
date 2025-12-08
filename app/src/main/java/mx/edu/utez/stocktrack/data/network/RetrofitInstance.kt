@@ -7,7 +7,7 @@ import mx.edu.utez.stocktrack.data.network.ApiService
 
 
 object RetrofitInstance {
-    private const val BASE_URL = "http://192.168.111.172:5001/"
+    private const val BASE_URL = "http://192.168.107.191:5001/"
 
     val api: ApiService by lazy {
         Retrofit.Builder()

@@ -3,8 +3,8 @@ package mx.edu.utez.stocktrack.ui.screens
 import android.Manifest
 import android.content.Context
 import android.net.Uri
-import android.os.Build
 import android.os.Environment
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -15,27 +15,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
-import androidx.core.content.FileProvider
-import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 import mx.edu.utez.stocktrack.viewmodel.ProductViewModel
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
-
+import androidx.core.content.FileProvider
 
 @Composable
 fun AddProductScreen(
-    viewModel: ProductViewModel = viewModel(),
+    viewModel: ProductViewModel,
     productId: Int? = null,
-    onProductSaved: () -> Unit = {}
+    onFinish: () -> Unit
 ) {
     val context = LocalContext.current
-    val isUpdateMode = productId != null
-    val products by viewModel.products.collectAsState()
-
-    val productToEdit = productId?.let { id -> products.find { it.id == id } }
 
     var name by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
@@ -43,103 +36,126 @@ fun AddProductScreen(
     var date by remember { mutableStateOf("") }
     var type by remember { mutableStateOf("") }
     var imageUri by remember { mutableStateOf<Uri?>(null) }
-    var tempImageUri by remember { mutableStateOf<Uri?>(null) }
+    var tempUri by remember { mutableStateOf<Uri?>(null) }
 
-    LaunchedEffect(productToEdit) {
-        productToEdit?.let {
-            name = it.name
-            description = it.description
-            amount = it.amount.toString()
-            date = it.date
-            type = it.type
-            imageUri = it.imageUrl?.let { Uri.parse(it) }
+    // Cargar productos si no están cargados
+    LaunchedEffect(Unit) { if (viewModel.products.value.isEmpty()) viewModel.loadProducts() }
+
+    // Llenar campos cuando productos estén listos y haya productId
+    LaunchedEffect(viewModel.products.value, productId) {
+        productId?.let { id ->
+            val product = viewModel.products.value.find { it.id == id }
+            product?.let {
+                name = it.name
+                description = it.description
+                amount = it.amount.toString()
+                date = it.date
+                type = it.type
+                imageUri = it.imageUrl?.let { url -> Uri.parse(url) }
+            }
         }
     }
 
-    val requiredPermissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) arrayOf(Manifest.permission.CAMERA) else arrayOf(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-    var hasPermissions by remember { mutableStateOf(false) }
-    val permissionLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { results ->
-        hasPermissions = results.values.all { it }
-    }
-    LaunchedEffect(Unit) {
-        hasPermissions = requiredPermissions.all { ContextCompat.checkSelfPermission(context, it) == android.content.pm.PackageManager.PERMISSION_GRANTED }
-        if (!hasPermissions) permissionLauncher.launch(requiredPermissions)
+    // Lanzador para galería
+    val galleryLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        imageUri = uri
     }
 
-    val launcherCamera = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { success ->
-        if (success) imageUri = tempImageUri
-        tempImageUri = null
+    // Lanzador para cámara
+    val cameraLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.TakePicture()
+    ) { success ->
+        if (success) imageUri = tempUri
     }
 
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+    // Lanzador para permisos de cámara
+    val cameraPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) {
+            val uri = createTempImageUri(context)
+            tempUri = uri
+            uri?.let { cameraLauncher.launch(it) }
+        } else {
+            Toast.makeText(context, "Permiso de cámara requerido", Toast.LENGTH_SHORT).show()
+        }
+    }
 
+    // Lanzador para permisos de lectura de imágenes (galería)
+    val galleryPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) galleryLauncher.launch("image/*")
+        else Toast.makeText(context, "Permiso de almacenamiento requerido", Toast.LENGTH_SHORT).show()
+    }
 
+    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+        Text(
+            if (productId == null) "Agregar Producto" else "Actualizar Producto",
+            style = MaterialTheme.typography.headlineSmall
+        )
 
-        Text(if (isUpdateMode) "Actualizar producto" else "Agregar producto", style = MaterialTheme.typography.headlineSmall)
-        Text("Nombre", style = MaterialTheme.typography.bodyMedium)
+        Spacer(Modifier.height(16.dp))
+
+        // Botón cámara
+        Button(onClick = { cameraPermissionLauncher.launch(Manifest.permission.CAMERA) }) {
+            Text("Tomar Foto")
+        }
+
+        Spacer(Modifier.height(10.dp))
+
+        // Botón galería
+        Button(onClick = { galleryPermissionLauncher.launch(Manifest.permission.READ_MEDIA_IMAGES) }) {
+            Text("Seleccionar de Galería")
+        }
+
+        Spacer(Modifier.height(10.dp))
+
+        // Mostrar imagen seleccionada
+        imageUri?.let {
+            Image(
+                painter = rememberAsyncImagePainter(it),
+                contentDescription = null,
+                modifier = Modifier.size(150.dp).align(Alignment.CenterHorizontally)
+            )
+        }
+
+        Spacer(Modifier.height(20.dp))
+
+        // Campos de texto
         OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text("Nombre") })
-        Text("Descripción", style = MaterialTheme.typography.bodyMedium)
         OutlinedTextField(value = description, onValueChange = { description = it }, label = { Text("Descripción") })
-        Text("Cantidad", style = MaterialTheme.typography.bodyMedium)
         OutlinedTextField(value = amount, onValueChange = { amount = it }, label = { Text("Cantidad") })
-        Text("Fecha", style = MaterialTheme.typography.bodyMedium)
-        OutlinedTextField(value = date, onValueChange = { date = it }, label = { Text("Fecha (YYYY-MM-DD)") })
-        Text("Tipo", style = MaterialTheme.typography.bodyMedium)
+        OutlinedTextField(value = date, onValueChange = { date = it }, label = { Text("Fecha") })
         OutlinedTextField(value = type, onValueChange = { type = it }, label = { Text("Tipo") })
 
-        imageUri?.let { uri ->
-            Image(painter = rememberAsyncImagePainter(uri), contentDescription = "Foto del producto", modifier = Modifier.size(180.dp).align(Alignment.CenterHorizontally))
-        }
+        Spacer(Modifier.height(20.dp))
 
+        // Botón Guardar / Actualizar
         Button(
             onClick = {
-                if (!hasPermissions) permissionLauncher.launch(requiredPermissions)
-                else {
-                    val uri = createTempImageUri(context)
-                    tempImageUri = uri
-                    launcherCamera.launch(uri)
-                }
-            },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Tomar foto")
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(
-            onClick = {
-                if (isUpdateMode && productToEdit != null) {
-                    viewModel.updateProduct(
-                        id = productToEdit.id,
-                        name = name,
-                        description = description,
-                        amount = amount.toIntOrNull() ?: 0,
-                        date = date,
-                        type = type,
-                        imageUrl = imageUri?.toString()
-                    )
+                if (productId == null) {
+                    viewModel.createProduct(context, imageUri, name, description, amount, date, type) { onFinish() }
                 } else {
-                    viewModel.insertProduct(
-                        name = name,
-                        description = description,
-                        amount = amount.toIntOrNull() ?: 0,
-                        date = date,
-                        type = type,
-                        imageUrl = imageUri?.toString()
-                    )
+                    viewModel.updateProduct(context, productId, imageUri, name, description, amount, date, type) { onFinish() }
                 }
-                onProductSaved()
             },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(if (isUpdateMode) "Actualizar producto" else "Guardar producto")
+            Text(if (productId == null) "Guardar" else "Actualizar")
         }
     }
 }
 
-private fun createTempImageUri(context: Context): Uri {
-    val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
-    val imageFile = File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "IMG_$timestamp.jpg")
-    return FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", imageFile)
+private fun createTempImageUri(context: Context): Uri? {
+    return try {
+        val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
+        val imageFile = File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "IMG_$timestamp.jpg")
+        FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", imageFile)
+    } catch (e: Exception) {
+        e.printStackTrace()
+        null
+    }
 }

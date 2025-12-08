@@ -19,7 +19,6 @@ class ProductViewModel(private val repo: ProductRepository) : ViewModel() {
     private val _loading = MutableStateFlow(false)
     val loading: StateFlow<Boolean> get() = _loading
 
-    /** Cargar todos los productos */
     fun loadProducts() {
         viewModelScope.launch {
             _loading.value = true
@@ -29,7 +28,6 @@ class ProductViewModel(private val repo: ProductRepository) : ViewModel() {
         }
     }
 
-    /** Crear un producto */
     fun createProduct(
         context: Context,
         imageUri: Uri?,
@@ -43,22 +41,13 @@ class ProductViewModel(private val repo: ProductRepository) : ViewModel() {
         viewModelScope.launch {
             _loading.value = true
             val amountInt = amount.toIntOrNull() ?: 0
-            repo.createProduct(
-                context = context,
-                imageUri = imageUri,
-                name = name,
-                description = description,
-                amount = amountInt,
-                date = date,
-                type = type
-            )
+            repo.createProduct(context, imageUri, name, description, amountInt, date, type)
             loadProducts()
             _loading.value = false
             onDone()
         }
     }
 
-    /** Actualizar un producto */
     fun updateProduct(
         context: Context,
         id: Int,
@@ -73,16 +62,7 @@ class ProductViewModel(private val repo: ProductRepository) : ViewModel() {
         viewModelScope.launch {
             _loading.value = true
             val amountInt = amount.toIntOrNull() ?: 0
-            repo.updateProduct(
-                context = context,
-                id = id,
-                imageUri = imageUri,
-                name = name,
-                description = description,
-                amount = amountInt,
-                date = date,
-                type = type
-            )
+            repo.updateProduct(context, id, imageUri, name, description, amountInt, date, type)
             loadProducts()
             _loading.value = false
             onDone()
@@ -92,26 +72,18 @@ class ProductViewModel(private val repo: ProductRepository) : ViewModel() {
     fun deleteProduct(id: Int, onDone: () -> Unit = {}) {
         viewModelScope.launch {
             _loading.value = true
-
             repo.deleteProduct(id)
-
-            // Recarga productos
             loadProducts()
             _loading.value = false
-
             onDone()
         }
     }
-
 }
 
-/* ============================================================
-   FACTORY PARA INYECTAR REPOSITORY EN PRODUCTVIEWMODEL
-   ============================================================ */
-class ProductViewModelFactory(
-    private val repo: ProductRepository
-) : ViewModelProvider.Factory {
-
+/* ======================================================
+   FACTORY PARA INYECTAR REPOSITORY
+   ====================================================== */
+class ProductViewModelFactory(private val repo: ProductRepository) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(ProductViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")

@@ -1,12 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<paths>
-    <!--
-    Define la carpeta "files" externa de nuestra app.
-    Corresponde a context.getExternalFilesDir(null)
-    El 'name' es un alias, y el 'path' es la subcarpeta ('.' significa la raíz)
-    -->
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
     <external-files-path
-        name="my_media"
-        path="." />
+        name="images"
+        path="Pictures"/>
 </paths>
-

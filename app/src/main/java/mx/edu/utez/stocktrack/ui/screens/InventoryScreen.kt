@@ -15,7 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -28,22 +27,21 @@ import mx.edu.utez.stocktrack.viewmodel.ProductViewModel
 import mx.edu.utez.stocktrack.viewmodel.ProductViewModelFactory
 
 @Composable
-fun InventoryScreen(navController: NavController,
+fun InventoryScreen(
+    navController: NavController,
+    viewModel: ProductViewModel,
     onAddProductClick: () -> Unit,
-                    onLogoutClick: () -> Unit) {
-
+    onLogoutClick: () -> Unit
+) {
     val cafe = Color(0xFFA88871)
 
-    val repository = remember { ProductRepository(RetrofitInstance.api) }
-    val factory = remember { ProductViewModelFactory(repository) }
-    val viewModel: ProductViewModel = viewModel(factory = factory)
-
+    // Cargar productos al iniciar
     LaunchedEffect(Unit) {
         viewModel.loadProducts()
     }
 
     val products by viewModel.products.collectAsState()
-
+    val isLoading by viewModel.loading.collectAsState()
 
     Scaffold(
         topBar = {
@@ -85,10 +83,10 @@ fun InventoryScreen(navController: NavController,
                         )
                     }
 
-                    IconButton(onClick = { onLogoutClick()}) {
+                    IconButton(onClick = { onLogoutClick() }) {
                         Icon(
                             painter = painterResource(R.drawable.logout),
-                            contentDescription = null,
+                            contentDescription = "Cerrar sesión",
                             tint = Color.White
                         )
                     }
@@ -105,7 +103,7 @@ fun InventoryScreen(navController: NavController,
                 contentAlignment = Alignment.Center
             ) {
                 FloatingActionButton(
-                    onClick = {  onAddProductClick()},
+                    onClick = { onAddProductClick() },
                     containerColor = Color.White,
                     shape = RoundedCornerShape(50),
                     modifier = Modifier.size(64.dp)
@@ -126,27 +124,35 @@ fun InventoryScreen(navController: NavController,
                 .padding(padding)
                 .background(MaterialTheme.colorScheme.background)
         ) {
-
             Spacer(modifier = Modifier.height(16.dp))
             SearchInput()
             Spacer(modifier = Modifier.height(24.dp))
 
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(bottom = 100.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                items(products) { product ->
-                    ProductCard(
-                        product = product,
-                        viewModel = viewModel,
-                        onUpdateClick = { selectedProduct ->
-                            navController.navigate("updateProduct/${selectedProduct.id}")
-                        }
-                    )
+            if (isLoading) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
                 }
-
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(bottom = 100.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    items(products) { product ->
+                        ProductCard(
+                            product = product,
+                            viewModel = viewModel,
+                            onUpdateClick = { selectedProduct ->
+                                // Navegar a pantalla de actualización
+                                navController.navigate("updateProduct/${selectedProduct.id}")
+                            }
+                        )
+                    }
+                }
             }
         }
     }
