@@ -3,12 +3,16 @@ package mx.edu.utez.stocktrack.data.network
 import mx.edu.utez.stocktrack.data.model.LoginRequest
 import mx.edu.utez.stocktrack.data.model.UserRequest
 import mx.edu.utez.stocktrack.data.model.Product
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.DELETE
+import retrofit2.http.Multipart
+import retrofit2.http.Part
 import retrofit2.http.Path
 
 interface ApiService {
@@ -30,6 +34,30 @@ interface ApiService {
 
     @PUT("products/{id}")
     suspend fun updateProduct(@Path("id") id: Int?, @Body product: Product): Response<Product>
+
+    @Multipart
+    @POST("products")
+    suspend fun createProduct(
+        @Part image: MultipartBody.Part?,
+        @Part("name") name: RequestBody,
+        @Part("description") description: RequestBody,
+        @Part("amount") amount: RequestBody,
+        @Part("date") date: RequestBody,
+        @Part("type") type: RequestBody
+    ): Response<Product>
+
+    @Multipart
+    @PUT("products/{id}")
+    suspend fun updateProduct(
+        @Path("id") id: Int,
+        @Part image: MultipartBody.Part?,
+        @Part("name") name: RequestBody,
+        @Part("description") description: RequestBody,
+        @Part("amount") amount: RequestBody,
+        @Part("date") date: RequestBody,
+        @Part("type") type: RequestBody
+    ): Response<Product>
+
 
     @DELETE("products/{id}")
     suspend fun deleteProduct(@Path("id") id: Int?): Response<Map<String, String>>

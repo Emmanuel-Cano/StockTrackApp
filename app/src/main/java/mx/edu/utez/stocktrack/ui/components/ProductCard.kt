@@ -11,6 +11,9 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import mx.edu.utez.stocktrack.data.model.Product
 import mx.edu.utez.stocktrack.viewmodel.ProductViewModel
 
@@ -21,17 +24,26 @@ fun ProductCard(
     onUpdateClick: (Product) -> Unit
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp, horizontal = 16.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp, horizontal = 16.dp),
         shape = RoundedCornerShape(16.dp),
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(16.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             AsyncImage(
                 model = product.imageUrl,
                 contentDescription = product.name,
-                modifier = Modifier.size(100.dp).background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(8.dp)),
+                modifier = Modifier
+                    .size(100.dp)
+                    .background(
+                        MaterialTheme.colorScheme.surfaceVariant,
+                        RoundedCornerShape(8.dp)
+                    ),
                 contentScale = ContentScale.Crop
             )
 
@@ -53,7 +65,12 @@ fun ProductCard(
 
                 Spacer(modifier = Modifier.width(10.dp))
 
-                Box(modifier = Modifier.width(1.dp).height(100.dp).background(MaterialTheme.colorScheme.outlineVariant))
+                Box(
+                    modifier = Modifier
+                        .width(1.dp)
+                        .height(100.dp)
+                        .background(MaterialTheme.colorScheme.outlineVariant)
+                )
 
                 Spacer(modifier = Modifier.width(10.dp))
 
@@ -62,9 +79,21 @@ fun ProductCard(
                     verticalArrangement = Arrangement.SpaceAround,
                     modifier = Modifier.height(100.dp)
                 ) {
-                    Button(onClick = { viewModel.deleteProduct(product.id) }) {
+                    // Botón Eliminar
+                    Button(
+                        onClick = {
+                            product.id?.let { id ->
+                                // Lanza la coroutine para eliminar producto
+                                CoroutineScope(Dispatchers.IO).launch {
+                                    viewModel.deleteProduct(id)
+                                }
+                            }
+                        }
+                    ) {
                         Text("Eliminar", fontSize = 14.sp)
                     }
+
+                    // Botón Actualizar
                     Button(onClick = { onUpdateClick(product) }) {
                         Text("Actualizar", fontSize = 14.sp)
                     }

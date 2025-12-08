@@ -21,20 +21,52 @@ fun Navigation() {
     val loginViewModel: LoginViewModel = viewModel()
 
     NavHost(navController = navController, startDestination = "login") {
-        composable("login") { LoginScreen(viewModel = loginViewModel, navController = navController) }
+
+        composable("login") {
+            LoginScreen(viewModel = loginViewModel, navController = navController)
+        }
+
         composable("loginUser") {
             LoginUserScreen(
                 viewModel = loginViewModel,
                 navController = navController,
-                onLoginSuccess = { navController.navigate("inventory") { popUpTo("loginUser") { inclusive = true } } }
+                onLoginSuccess = {
+                    navController.navigate("inventory") {
+                        popUpTo("loginUser") { inclusive = true }
+                    }
+                }
             )
         }
-        composable("password") { RecuperarContrasenaScreen(onRecuperarClick = { navController.popBackStack() }, onCancelarClick = { navController.popBackStack() }) }
-        composable("passworduser") { RecuperarUserContrasenaScreen(viewModel = loginViewModel, navController = navController, onRecuperarClick = { navController.popBackStack() }, onCancelarClick = { navController.popBackStack() }) }
+
+        composable("password") {
+            RecuperarContrasenaScreen(
+                onRecuperarClick = { navController.popBackStack() },
+                onCancelarClick = { navController.popBackStack() }
+            )
+        }
+
+        composable("passworduser") {
+            RecuperarUserContrasenaScreen(
+                viewModel = loginViewModel,
+                navController = navController,
+                onRecuperarClick = { navController.popBackStack() },
+                onCancelarClick = { navController.popBackStack() }
+            )
+        }
+
         composable("register") {
             val registerViewModel: RegisterViewModel = viewModel()
-            RegisterScreen(viewModel = registerViewModel, onRegistrationSuccess = { navController.navigate("login") { popUpTo("login") { inclusive = true } } }, onNavigateBack = { navController.popBackStack() })
+            RegisterScreen(
+                viewModel = registerViewModel,
+                onRegistrationSuccess = {
+                    navController.navigate("login") {
+                        popUpTo("login") { inclusive = true }
+                    }
+                },
+                onNavigateBack = { navController.popBackStack() }
+            )
         }
+
         composable("inventory") {
             InventoryScreen(
                 navController = navController,
@@ -48,22 +80,47 @@ fun Navigation() {
             )
         }
 
+        // --------------------------
+        // ADD PRODUCT
+        // --------------------------
         composable("addProduct") {
             val repository = ProductRepository(RetrofitInstance.api)
             val factory = ProductViewModelFactory(repository)
-            val productViewModel: ProductViewModel = viewModel(factory = factory)
-            AddProductScreen(viewModel = productViewModel, onProductSaved = { navController.popBackStack() })
+
+            val productViewModel: ProductViewModel = viewModel(
+                modelClass = ProductViewModel::class.java,
+                factory = factory
+            )
+
+            AddProductScreen(
+                viewModel = productViewModel,
+                onFinish = { navController.popBackStack() }
+            )
         }
 
+        // --------------------------
+        // UPDATE PRODUCT
+        // --------------------------
         composable(
             route = "updateProduct/{id}",
             arguments = listOf(navArgument("id") { type = NavType.IntType })
         ) { backStackEntry ->
+
             val repository = ProductRepository(RetrofitInstance.api)
             val factory = ProductViewModelFactory(repository)
-            val productViewModel: ProductViewModel = viewModel(factory = factory)
+
+            val productViewModel: ProductViewModel = viewModel(
+                modelClass = ProductViewModel::class.java,
+                factory = factory
+            )
+
             val id = backStackEntry.arguments?.getInt("id") ?: 0
-            AddProductScreen(viewModel = productViewModel, productId = id, onProductSaved = { navController.popBackStack() })
+
+            AddProductScreen(
+                viewModel = productViewModel,
+                productId = id, // asegúrate que AddProductScreen tenga este parámetro opcional
+                onFinish = { navController.popBackStack() }
+            )
         }
     }
 }
