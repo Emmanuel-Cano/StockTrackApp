@@ -69,6 +69,14 @@ fun RegisterScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        Text(
+            text = "Nombre",
+            color = Color.Black,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Normal,
+            modifier = Modifier.align(Alignment.Start)
+        )
+
         // Nombre
         OutlinedTextField(
             value = viewModel.nombre,
@@ -79,6 +87,13 @@ fun RegisterScreen(
 
 
 
+        Text(
+            text = "Correo",
+            color = Color.Black,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Normal,
+            modifier = Modifier.align(Alignment.Start)
+        )
         // Email
         OutlinedTextField(
             value = viewModel.email,
@@ -87,6 +102,14 @@ fun RegisterScreen(
             modifier = Modifier.fillMaxWidth()
         )
 
+
+        Text(
+            text = "Contraseña",
+            color = Color.Black,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Normal,
+            modifier = Modifier.align(Alignment.Start)
+        )
         // Contraseña
         OutlinedTextField(
             value = viewModel.password,
@@ -96,6 +119,13 @@ fun RegisterScreen(
             modifier = Modifier.fillMaxWidth()
         )
 
+        Text(
+            text = "Confirmar contraseña",
+            color = Color.Black,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Normal,
+            modifier = Modifier.align(Alignment.Start)
+        )
         // Repetir Contraseña
         OutlinedTextField(
             value = viewModel.passwordc,

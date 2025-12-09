@@ -123,7 +123,6 @@ fun InventoryScreen(
                 .background(MaterialTheme.colorScheme.background)
         ) {
             Spacer(modifier = Modifier.height(16.dp))
-            SearchInput()
             Spacer(modifier = Modifier.height(24.dp))
 
             if (isLoading) {
@@ -156,27 +155,3 @@ fun InventoryScreen(
     }
 }
 
-@Composable
-fun SearchInput() {
-    var searchText by remember { mutableStateOf("") }
-
-    Box(
-        modifier = Modifier.fillMaxWidth(),
-        contentAlignment = Alignment.Center
-    ) {
-        OutlinedTextField(
-            value = searchText,
-            onValueChange = { searchText = it },
-            placeholder = {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.Search, contentDescription = null)
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Buscar producto")
-                }
-            },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth(0.9f),
-            shape = RoundedCornerShape(30.dp)
-        )
-    }
-}
