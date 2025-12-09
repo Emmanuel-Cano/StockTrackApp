@@ -52,7 +52,7 @@ class ProductRepository(private val api: ApiService) {
         val imagePart = prepareImage(context, imageUri)
         val response = api.updateProduct(
             id = id,
-            image = imagePart, // si imageUri es URL remoto, será null y no se reenvía
+            image = imagePart,
             name = name.toRB(),
             description = description.toRB(),
             amount = amount.toString().toRB(),
@@ -67,11 +67,6 @@ class ProductRepository(private val api: ApiService) {
             api.deleteProduct(id)
         }
     }
-
-    /**
-     * Prepara la imagen solo si es un URI local (content:// o file://)
-     * Ignora URLs remotas (http:// o https://) para no causar crash
-     */
     private fun prepareImage(context: Context, uri: Uri?): MultipartBody.Part? {
         if (uri == null) return null
 

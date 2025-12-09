@@ -18,12 +18,22 @@ import mx.edu.utez.stocktrack.viewmodel.RegisterViewModel
 @Composable
 fun Navigation() {
     val navController = rememberNavController()
+
     val loginViewModel: LoginViewModel = viewModel()
+
+    val repository = ProductRepository(RetrofitInstance.api)
+    val factory = ProductViewModelFactory(repository)
+
+    // Un solo ViewModel para TODO el módulo de productos
+    val productViewModel: ProductViewModel = viewModel(factory = factory)
 
     NavHost(navController = navController, startDestination = "login") {
 
         composable("login") {
-            LoginScreen(viewModel = loginViewModel, navController = navController)
+            LoginScreen(
+                viewModel = loginViewModel,
+                navController = navController
+            )
         }
 
         composable("loginUser") {
@@ -31,7 +41,9 @@ fun Navigation() {
                 viewModel = loginViewModel,
                 navController = navController,
                 onLoginSuccess = {
-                    navController.navigate("inventory") { popUpTo("loginUser") { inclusive = true } }
+                    navController.navigate("inventory") {
+                        popUpTo("loginUser") { inclusive = true }
+                    }
                 }
             )
         }
@@ -40,48 +52,47 @@ fun Navigation() {
             val registerViewModel: RegisterViewModel = viewModel()
             RegisterScreen(
                 viewModel = registerViewModel,
-                onRegistrationSuccess = { navController.navigate("login") { popUpTo("login") { inclusive = true } } },
+                onRegistrationSuccess = {
+                    navController.navigate("login") {
+                        popUpTo("login") { inclusive = true }
+                    }
+                },
                 onNavigateBack = { navController.popBackStack() }
             )
         }
 
         composable("inventory") {
-            val repository = ProductRepository(RetrofitInstance.api)
-            val factory = ProductViewModelFactory(repository)
-            val productViewModel: ProductViewModel = viewModel(factory = factory)
-
             InventoryScreen(
                 navController = navController,
-                viewModel = productViewModel, // <--- Aquí pasas el viewModel
+                viewModel = productViewModel,
                 onAddProductClick = { navController.navigate("addProduct") },
                 onLogoutClick = {
-                    // Aquí defines lo que pasa al cerrar sesión
-                    productViewModel.loadProducts() // opcional: refrescar
-                    navController.navigate("login") { popUpTo("inventory") { inclusive = true } }
+                    navController.navigate("login") {
+                        popUpTo("inventory") { inclusive = true }
+                    }
                 }
             )
         }
 
-
-
         composable("addProduct") {
-            val repository = ProductRepository(RetrofitInstance.api)
-            val factory = ProductViewModelFactory(repository)
-            val productViewModel: ProductViewModel = viewModel(factory = factory)
-
-            AddProductScreen(viewModel = productViewModel) { navController.popBackStack() }
+            AddProductScreen(
+                viewModel = productViewModel,
+                onFinish = { navController.popBackStack() }
+            )
         }
 
         composable(
             "updateProduct/{id}",
             arguments = listOf(navArgument("id") { type = NavType.IntType })
         ) { backStackEntry ->
-            val repository = ProductRepository(RetrofitInstance.api)
-            val factory = ProductViewModelFactory(repository)
-            val productViewModel: ProductViewModel = viewModel(factory = factory)
 
             val id = backStackEntry.arguments?.getInt("id") ?: 0
-            AddProductScreen(viewModel = productViewModel, productId = id) { navController.popBackStack() }
+
+            AddProductScreen(
+                viewModel = productViewModel,
+                productId = id,
+                onFinish = { navController.popBackStack() }
+            )
         }
     }
 }

@@ -38,40 +38,42 @@ fun AddProductScreen(
     var imageUri by remember { mutableStateOf<Uri?>(null) }
     var tempUri by remember { mutableStateOf<Uri?>(null) }
 
-    // Cargar productos si no están cargados
-    LaunchedEffect(Unit) { if (viewModel.products.value.isEmpty()) viewModel.loadProducts() }
+    LaunchedEffect(Unit) {
+        if (viewModel.products.value.isEmpty()) {
+            viewModel.loadProducts()
+        }
+    }
 
-    // Llenar campos cuando productos estén listos y haya productId
-    LaunchedEffect(viewModel.products.value, productId) {
-        productId?.let { id ->
-            val product = viewModel.products.value.find { it.id == id }
+    LaunchedEffect(productId, viewModel.products.value) {
+        if (productId != null && viewModel.products.value.isNotEmpty()) {
+            val product = viewModel.products.value.find { it.id == productId }
             product?.let {
                 name = it.name
                 description = it.description
                 amount = it.amount.toString()
                 date = it.date
                 type = it.type
-                imageUri = it.imageUrl?.let { url -> Uri.parse(url) }
+                imageUri = it.imageUrl?.let(Uri::parse)
             }
         }
     }
 
-    // Lanzador para galería
+
+    // --- Launchers ---
+
     val galleryLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         imageUri = uri
     }
 
-    // Lanzador para cámara
     val cameraLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.TakePicture()
     ) { success ->
         if (success) imageUri = tempUri
     }
 
-    // Lanzador para permisos de cámara
-    val cameraPermissionLauncher = rememberLauncherForActivityResult(
+    val cameraPermission = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { granted ->
         if (granted) {
@@ -83,15 +85,16 @@ fun AddProductScreen(
         }
     }
 
-    // Lanzador para permisos de lectura de imágenes (galería)
-    val galleryPermissionLauncher = rememberLauncherForActivityResult(
+    val galleryPermission = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { granted ->
         if (granted) galleryLauncher.launch("image/*")
-        else Toast.makeText(context, "Permiso de almacenamiento requerido", Toast.LENGTH_SHORT).show()
+        else Toast.makeText(context, "Permiso requerido para galería", Toast.LENGTH_SHORT).show()
     }
 
+
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+
         Text(
             if (productId == null) "Agregar Producto" else "Actualizar Producto",
             style = MaterialTheme.typography.headlineSmall
@@ -99,32 +102,30 @@ fun AddProductScreen(
 
         Spacer(Modifier.height(16.dp))
 
-        // Botón cámara
-        Button(onClick = { cameraPermissionLauncher.launch(Manifest.permission.CAMERA) }) {
+        Button(onClick = { cameraPermission.launch(Manifest.permission.CAMERA) }) {
             Text("Tomar Foto")
         }
 
         Spacer(Modifier.height(10.dp))
 
-        // Botón galería
-        Button(onClick = { galleryPermissionLauncher.launch(Manifest.permission.READ_MEDIA_IMAGES) }) {
+        Button(onClick = { galleryPermission.launch(Manifest.permission.READ_MEDIA_IMAGES) }) {
             Text("Seleccionar de Galería")
         }
 
         Spacer(Modifier.height(10.dp))
 
-        // Mostrar imagen seleccionada
         imageUri?.let {
             Image(
                 painter = rememberAsyncImagePainter(it),
                 contentDescription = null,
-                modifier = Modifier.size(150.dp).align(Alignment.CenterHorizontally)
+                modifier = Modifier
+                    .size(150.dp)
+                    .align(Alignment.CenterHorizontally)
             )
         }
 
         Spacer(Modifier.height(20.dp))
 
-        // Campos de texto
         OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text("Nombre") })
         OutlinedTextField(value = description, onValueChange = { description = it }, label = { Text("Descripción") })
         OutlinedTextField(value = amount, onValueChange = { amount = it }, label = { Text("Cantidad") })
@@ -133,13 +134,16 @@ fun AddProductScreen(
 
         Spacer(Modifier.height(20.dp))
 
-        // Botón Guardar / Actualizar
         Button(
             onClick = {
                 if (productId == null) {
-                    viewModel.createProduct(context, imageUri, name, description, amount, date, type) { onFinish() }
+                    viewModel.createProduct(
+                        context, imageUri, name, description, amount, date, type
+                    ) { onFinish() }
                 } else {
-                    viewModel.updateProduct(context, productId, imageUri, name, description, amount, date, type) { onFinish() }
+                    viewModel.updateProduct(
+                        context, productId, imageUri, name, description, amount, date, type
+                    ) { onFinish() }
                 }
             },
             modifier = Modifier.fillMaxWidth()
@@ -152,8 +156,15 @@ fun AddProductScreen(
 private fun createTempImageUri(context: Context): Uri? {
     return try {
         val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
-        val imageFile = File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "IMG_$timestamp.jpg")
-        FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", imageFile)
+        val imageFile = File(
+            context.getExternalFilesDir(Environment.DIRECTORY_PICTURES),
+            "IMG_$timestamp.jpg"
+        )
+        FileProvider.getUriForFile(
+            context,
+            "${context.packageName}.fileprovider",
+            imageFile
+        )
     } catch (e: Exception) {
         e.printStackTrace()
         null

@@ -16,15 +16,21 @@ class ProductViewModel(private val repo: ProductRepository) : ViewModel() {
     private val _products = MutableStateFlow<List<Product>>(emptyList())
     val products: StateFlow<List<Product>> get() = _products
 
+    // Estado de carga
     private val _loading = MutableStateFlow(false)
     val loading: StateFlow<Boolean> get() = _loading
 
+
+    private val _errorMessage = MutableStateFlow<String?>(null)
+    val errorMessage: StateFlow<String?> get() = _errorMessage
+
+
     fun loadProducts() {
         viewModelScope.launch {
-            _loading.value = true
-            val data = repo.getProducts()
-            if (data != null) _products.value = data
-            _loading.value = false
+            safeRequest {
+                val data = repo.getProducts()
+                if (data != null) _products.value = data
+            }
         }
     }
 
@@ -39,15 +45,24 @@ class ProductViewModel(private val repo: ProductRepository) : ViewModel() {
         onDone: () -> Unit
     ) {
         viewModelScope.launch {
-            _loading.value = true
-            val amountInt = amount.toIntOrNull() ?: 0
-            repo.createProduct(context, imageUri, name, description, amountInt, date, type)
-            loadProducts()
-            _loading.value = false
-            onDone()
+            safeRequest {
+                val amountInt = amount.toIntOrNull() ?: 0
+
+                repo.createProduct(
+                    context,
+                    imageUri,
+                    name.trim(),
+                    description.trim(),
+                    amountInt,
+                    date.trim(),
+                    type.trim()
+                )
+
+                loadProducts()
+                onDone()
+            }
         }
     }
-
     fun updateProduct(
         context: Context,
         id: Int,
@@ -57,32 +72,56 @@ class ProductViewModel(private val repo: ProductRepository) : ViewModel() {
         amount: String,
         date: String,
         type: String,
-        onDone: () -> Unit
+        onDone: () -> Unit,
     ) {
         viewModelScope.launch {
-            _loading.value = true
-            val amountInt = amount.toIntOrNull() ?: 0
-            repo.updateProduct(context, id, imageUri, name, description, amountInt, date, type)
-            loadProducts()
-            _loading.value = false
-            onDone()
+            safeRequest {
+                val amountInt = amount.toIntOrNull() ?: 0
+
+                repo.updateProduct(
+                    context,
+                    id,
+                    imageUri,
+                    name.trim(),
+                    description.trim(),
+                    amountInt,
+                    date.trim(),
+                    type.trim()
+                )
+
+                loadProducts()
+                onDone()
+            }
         }
     }
 
-    fun deleteProduct(id: Int, onDone: () -> Unit = {}) {
+    fun deleteProduct(
+        id: Int,
+        onDone: () -> Unit = {}
+    ) {
         viewModelScope.launch {
+            safeRequest {
+                repo.deleteProduct(id)
+                loadProducts()
+                onDone()
+            }
+        }
+    }
+
+    private suspend fun safeRequest(block: suspend () -> Unit) {
+        try {
             _loading.value = true
-            repo.deleteProduct(id)
-            loadProducts()
+            _errorMessage.value = null
+            block()
+        } catch (e: Exception) {
+            _errorMessage.value = e.message ?: "Error inesperado"
+            e.printStackTrace()
+        } finally {
             _loading.value = false
-            onDone()
         }
     }
 }
 
-/* ======================================================
-   FACTORY PARA INYECTAR REPOSITORY
-   ====================================================== */
 class ProductViewModelFactory(private val repo: ProductRepository) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(ProductViewModel::class.java)) {
