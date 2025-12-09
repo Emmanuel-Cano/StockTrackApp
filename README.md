@@ -6,9 +6,9 @@ Fecha de entrega: 9 de Diciembre
 
 ## **Equipo de Desarrollo:**
 
-1. [Cano Landa Jorge Emmanuel]	Repositorio, Backend, Retrofit	@Emmanuel-Cano
+1. [Cano Landa Jorge Emmanuel]	Repositorio, Backend, Retrofit, Login, Distribución de carpetas	@Emmanuel-Cano
 2. [Ocampo Vargas Ricardo Naul]	UI Design, Fronted, Lógica de CRUD	@RicardoOcampo06
-3. [Villalba González Carlos Giovanni]	Sensor, Lógica, Backend, CRUD	@carlosvillalba06
+3. [Villalba González Carlos Giovanni]	Sensor, Lógica, Backend, CRUD, Retrofit	@carlosvillalba06
 
 
 ## **Descripción del Proyecto**
