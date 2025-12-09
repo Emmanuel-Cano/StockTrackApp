@@ -112,7 +112,7 @@ fun LoginUserScreen(viewModel: LoginViewModel, navController: NavController,
                 viewModel.onLoginClick()
             }
             Link("¿Olvidaste tu contraseña?") {
-                navController.navigate("password")
+                navController.navigate("recuperar")
             }
 
             TextButton(onClick = {

@@ -19,6 +19,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
+import kotlinx.coroutines.delay
 import mx.edu.utez.stocktrack.ui.components.ProductCard
 import mx.edu.utez.stocktrack.R
 import mx.edu.utez.stocktrack.data.network.RetrofitInstance
@@ -36,8 +38,13 @@ fun InventoryScreen(
     val cafe = Color(0xFFA88871)
 
     LaunchedEffect(Unit) {
-        viewModel.loadProducts()
+        while (true) {
+            viewModel.loadProducts()
+            delay(30000) // 5 segundos
+        }
     }
+
+
 
     val products by viewModel.products.collectAsState()
     val isLoading by viewModel.loading.collectAsState()

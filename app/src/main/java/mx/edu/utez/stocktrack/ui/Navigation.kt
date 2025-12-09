@@ -89,6 +89,17 @@ fun Navigation() {
             )
         }
 
+        composable("recuperar") {
+            RecuperarContrasenaScreen(
+                onRecuperarClick = {
+                },
+                onCancelarClick = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+
         composable(
             "updateProduct/{id}",
             arguments = listOf(navArgument("id") { type = NavType.IntType })

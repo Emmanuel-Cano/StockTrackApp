@@ -49,7 +49,7 @@ fun AddProductScreen(
     val scrollState = rememberScrollState()
     val cafe = Color(0xFFA88871)
 
-    LaunchedEffect(Unit) { if (viewModel.products.value.isEmpty()) viewModel.loadProducts() }
+    // 🔥 Cargar datos del producto si es edición
     LaunchedEffect(productId, viewModel.products.value) {
         if (productId != null && viewModel.products.value.isNotEmpty()) {
             val product = viewModel.products.value.find { it.id == productId }
@@ -64,14 +64,32 @@ fun AddProductScreen(
         }
     }
 
-    val galleryLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? -> imageUri = uri }
-    val cameraLauncher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { success -> if (success) imageUri = tempUri }
-    val cameraPermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-        if (granted) createTempImageUri(context)?.let { tempUri = it; cameraLauncher.launch(it) }
-        else Toast.makeText(context, "Permiso de cámara requerido", Toast.LENGTH_SHORT).show()
+    // Launchers
+    val galleryLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        imageUri = uri
     }
+
+    val cameraLauncher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { success ->
+        if (success) imageUri = tempUri
+    }
+
+    val cameraPermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+        if (granted) {
+            createTempImageUri(context)?.let {
+                tempUri = it
+                cameraLauncher.launch(it)
+            }
+        } else {
+            Toast.makeText(context, "Permiso de cámara requerido", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     val galleryPermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-        if (granted) galleryLauncher.launch("image/*") else Toast.makeText(context, "Permiso requerido para galería", Toast.LENGTH_SHORT).show()
+        if (granted) {
+            galleryLauncher.launch("image/*")
+        } else {
+            Toast.makeText(context, "Permiso requerido para galería", Toast.LENGTH_SHORT).show()
+        }
     }
 
     Scaffold(
@@ -88,30 +106,27 @@ fun AddProductScreen(
                     contentScale = ContentScale.Crop
                 )
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
+                    modifier = Modifier.fillMaxWidth().padding(16.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.Top
                 ) {
                     Column {
-                        Text("StockTrack", color = Color.White, style = MaterialTheme.typography.titleLarge.copy(fontSize = 28.sp, letterSpacing = 1.5.sp))
-                        Text(if (productId == null) "Agregar Producto" else "Actualizar Producto", color = Color.White, style = MaterialTheme.typography.titleLarge.copy(fontSize = 22.sp, letterSpacing = 1.5.sp))
+                        Text("StockTrack", color = Color.White, fontSize = 28.sp)
+                        Text(
+                            if (productId == null) "Agregar Producto" else "Actualizar Producto",
+                            color = Color.White,
+                            fontSize = 22.sp
+                        )
                     }
-                    IconButton(onClick = { onLogoutClick() }) {
-                        Icon(painter = painterResource(id = R.drawable.logout), contentDescription = "Cerrar sesión", tint = Color.White)
+                    IconButton(onClick = onLogoutClick) {
+                        Icon(
+                            painterResource(id = R.drawable.logout),
+                            contentDescription = "Cerrar sesión",
+                            tint = Color.White
+                        )
                     }
                 }
             }
-        },
-        bottomBar = {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(90.dp)
-                    .background(cafe),
-                contentAlignment = Alignment.Center
-            ) {}
         }
     ) { paddingValues ->
         Column(
@@ -121,10 +136,8 @@ fun AddProductScreen(
                 .padding(paddingValues)
                 .padding(16.dp)
         ) {
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                Text("Imagen del producto", fontSize = 16.sp, color = Color.Gray)
-            }
-            Spacer(modifier = Modifier.height(4.dp))
+
+            // Imagen
             imageUri?.let {
                 Image(
                     painter = rememberAsyncImagePainter(it),
@@ -141,57 +154,65 @@ fun AddProductScreen(
                     .height(180.dp)
                     .background(Color.LightGray),
                 contentAlignment = Alignment.Center
-            ) { Text("No hay imagen", color = Color.DarkGray) }
+            ) {
+                Text("No hay imagen", color = Color.DarkGray)
+            }
 
             Spacer(modifier = Modifier.height(8.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
+
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
                 Button(
                     onClick = { cameraPermission.launch(Manifest.permission.CAMERA) },
-                    modifier = Modifier.weight(1f).height(40.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8B5E3C))
-                ) { Text("Tomar foto", fontSize = 12.sp) }
-
-                Spacer(modifier = Modifier.width(8.dp))
+                    colors = ButtonDefaults.buttonColors(containerColor = cafe)
+                ) { Text("Tomar foto") }
 
                 Button(
                     onClick = { galleryPermission.launch(Manifest.permission.READ_MEDIA_IMAGES) },
-                    modifier = Modifier.weight(1f).height(40.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8B5E3C))
-                ) { Text("Galería", fontSize = 12.sp) }
+                    colors = ButtonDefaults.buttonColors(containerColor = cafe)
+                ) { Text("Galería") }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Campos
             OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text("Nombre") }, modifier = Modifier.fillMaxWidth())
             Spacer(Modifier.height(8.dp))
+
             OutlinedTextField(value = description, onValueChange = { description = it }, label = { Text("Descripción") }, modifier = Modifier.fillMaxWidth())
             Spacer(Modifier.height(8.dp))
+
             OutlinedTextField(value = amount, onValueChange = { amount = it }, label = { Text("Cantidad") }, modifier = Modifier.fillMaxWidth())
             Spacer(Modifier.height(8.dp))
+
             OutlinedTextField(value = date, onValueChange = { date = it }, label = { Text("Fecha") }, modifier = Modifier.fillMaxWidth())
             Spacer(Modifier.height(8.dp))
+
             OutlinedTextField(value = type, onValueChange = { type = it }, label = { Text("Tipo") }, modifier = Modifier.fillMaxWidth())
             Spacer(Modifier.height(16.dp))
 
             Button(
                 onClick = {
                     if (productId == null) {
-                        viewModel.createProduct(context, imageUri, name, description, amount, date, type) { onFinish() }
+                        viewModel.createProduct(context, imageUri, name, description, amount, date, type) {
+                            onFinish()
+                        }
                     } else {
-                        viewModel.updateProduct(context, productId, imageUri, name, description, amount, date, type) { onFinish() }
+                        viewModel.updateProduct(context, productId, imageUri, name, description, amount, date, type) {
+                            onFinish()
+                        }
                     }
                 },
                 modifier = Modifier.fillMaxWidth().height(50.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8B5E3C))
-            ) { Text(if (productId == null) "Guardar" else "Actualizar", fontSize = 16.sp) }
+                colors = ButtonDefaults.buttonColors(containerColor = cafe)
+            ) {
+                Text(if (productId == null) "Guardar" else "Actualizar", fontSize = 16.sp)
+            }
 
             Spacer(modifier = Modifier.height(32.dp))
         }
     }
 }
+
 
 private fun createTempImageUri(context: Context): Uri? {
     return try {
