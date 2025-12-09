@@ -35,7 +35,6 @@ fun InventoryScreen(
 ) {
     val cafe = Color(0xFFA88871)
 
-    // Cargar productos al iniciar
     LaunchedEffect(Unit) {
         viewModel.loadProducts()
     }
@@ -93,7 +92,6 @@ fun InventoryScreen(
                 }
             }
         },
-
         bottomBar = {
             Box(
                 modifier = Modifier

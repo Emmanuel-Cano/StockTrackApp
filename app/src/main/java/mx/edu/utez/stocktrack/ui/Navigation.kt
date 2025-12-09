@@ -24,7 +24,6 @@ fun Navigation() {
     val repository = ProductRepository(RetrofitInstance.api)
     val factory = ProductViewModelFactory(repository)
 
-    // Un solo ViewModel para TODO el módulo de productos
     val productViewModel: ProductViewModel = viewModel(factory = factory)
 
     NavHost(navController = navController, startDestination = "login") {
@@ -67,6 +66,7 @@ fun Navigation() {
                 viewModel = productViewModel,
                 onAddProductClick = { navController.navigate("addProduct") },
                 onLogoutClick = {
+                    loginViewModel.clearSession()
                     navController.navigate("login") {
                         popUpTo("inventory") { inclusive = true }
                     }
@@ -77,7 +77,15 @@ fun Navigation() {
         composable("addProduct") {
             AddProductScreen(
                 viewModel = productViewModel,
-                onFinish = { navController.popBackStack() }
+                onFinish = { navController.popBackStack() },
+                onLogoutClick = {
+                    loginViewModel.clearSession()
+                    navController.navigate("login"){
+                        popUpTo("addProduct"){
+                            inclusive = true
+                        }
+                    }
+                }
             )
         }
 
@@ -91,7 +99,15 @@ fun Navigation() {
             AddProductScreen(
                 viewModel = productViewModel,
                 productId = id,
-                onFinish = { navController.popBackStack() }
+                onFinish = { navController.popBackStack() },
+                onLogoutClick = {
+                    loginViewModel.clearSession()
+                    navController.navigate("login"){
+                        popUpTo("addProduct"){
+                            inclusive = true
+                        }
+                    }
+                }
             )
         }
     }

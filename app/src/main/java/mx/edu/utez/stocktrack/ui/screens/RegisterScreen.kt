@@ -84,7 +84,6 @@ fun RegisterScreen(
             value = viewModel.email,
             onValueChange = { viewModel.email = it },
             label = { Text("Correo") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             modifier = Modifier.fillMaxWidth()
         )
 
