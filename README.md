@@ -78,9 +78,6 @@ Permite actualizar datos del producto, incluyendo su imagen si se envía nuevame
 DELETE:
 DELETE — Eliminar producto
 
-DELETE /products/{id}
-La aplicación elimina un producto del inventario enviando únicamente su ID.
-Sensor Integrado: [Cámara / GPS / Proximidad / Acelerómetro / etc.]
 
 ## **Uso del sensor:**
 La aplicación utiliza el sensor para tomar foto del producto y poder identificarlo sin ningun problema.
