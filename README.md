@@ -107,9 +107,20 @@ Primero, la app le pedirá al usuario iniciar sesión o registrarte.
 <img width="808" height="1738" alt="image" src="https://github.com/user-attachments/assets/21e94cd0-5037-4006-a128-2a61b597c321" />
 
 
-
 Posterior, la app solicitara al usuario ingresar con las credenciales válidas
 
 
+<img width="768" height="1686" alt="image" src="https://github.com/user-attachments/assets/c2a07668-3646-4796-a413-bc613713c8b3" />
 
 
+esta es la pantalla principal de el programa
+
+
+<img width="752" height="1668" alt="image" src="https://github.com/user-attachments/assets/4a37ca8a-bde9-477c-bb8f-87d176300867" />
+
+Pantalla para agregar productos
+
+
+<img width="742" height="1672" alt="image" src="https://github.com/user-attachments/assets/50fb76d9-703b-4fce-9911-ace9ad803b33" />
+
+Pantalla para registrarte
